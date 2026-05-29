@@ -57,7 +57,7 @@ api.interceptors.response.use(
       try {
         const { data } = await axios.post('/api/auth/refresh', { refreshToken });
 
-        const storage = localStorage.getItem('rememberMe') ? localStorage : sessionStorage;
+        const storage = localStorage.getItem('rememberMe') === 'true' ? localStorage : sessionStorage;
         storage.setItem('accessToken', data.accessToken);
         storage.setItem('refreshToken', data.refreshToken);
 

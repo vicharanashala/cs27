@@ -1,0 +1,521 @@
+:root {
+  --navy: #080d1a;
+  --navy2: #0d1630;
+  --teal: #00e5c0;
+  --white: #f0f4ff;
+  --muted: #7a8ab0;
+  --glass: rgba(13, 22, 48, 0.85);
+  --glass-border: rgba(0, 229, 192, 0.15);
+  --glass-glow: rgba(0, 229, 192, 0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: 200ms ease;
+}
+
+.neural-faq-page {
+  min-height: 100vh;
+  background: var(--navy);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+}
+
+.neural-faq-header {
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.neural-faq-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.neural-faq-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  cursor: pointer;
+}
+
+.neural-faq-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.neural-faq-nav-btn {
+  padding: 7px 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition);
+}
+
+.neural-faq-nav-btn:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: var(--glass-glow);
+}
+
+.neural-faq-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.neural-faq-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.neural-faq-user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white);
+}
+
+.neural-faq-logout {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.neural-faq-logout:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.neural-faq-main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 24px 60px;
+}
+
+.neural-faq-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 32px;
+  padding-top: 40px;
+}
+
+.neural-faq-chat-section {
+  min-width: 0;
+}
+
+.neural-faq-hero {
+  margin-bottom: 24px;
+}
+
+.neural-faq-title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.neural-faq-subtitle {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.neural-chatbot {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--glass-border);
+}
+
+.neural-chatbot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(0, 229, 192, 0.04);
+}
+
+.neural-chatbot-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.neural-chatbot-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--teal);
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.neural-chatbot-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.neural-chatbot-status {
+  font-size: 11px;
+  color: var(--teal);
+  font-weight: 500;
+}
+
+.neural-chatbot-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 320px;
+  max-height: 440px;
+}
+
+.neural-chatbot-body::-webkit-scrollbar { width: 4px; }
+.neural-chatbot-body::-webkit-scrollbar-track { background: transparent; }
+.neural-chatbot-body::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 2px; }
+
+.chat-message {
+  display: flex;
+  gap: 10px;
+  animation: fadeInUp 0.25s ease;
+}
+
+.chat-message-user { flex-direction: row-reverse; }
+
+.chat-message-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--navy2);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.chat-message-content {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--white);
+  background: var(--navy2);
+  border: 1px solid var(--glass-border);
+}
+
+.chat-message-content-user {
+  background: var(--teal);
+  color: var(--navy);
+  border-color: var(--teal);
+  font-weight: 500;
+}
+
+.chat-message-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-message-faq {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  gap: 16px;
+}
+
+.chat-faq-item { display: flex; flex-direction: column; gap: 2px; }
+.chat-faq-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.chat-faq-value { font-size: 13px; color: var(--teal); font-weight: 600; }
+
+.chat-no-match { margin-top: 8px; }
+.chat-no-match p { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+.chat-no-match p:first-child { color: var(--white); font-weight: 600; font-size: 14px; }
+
+.chat-typing {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.chat-typing span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal);
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+.chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+  0%, 60%, 100% { opacity: 0.2; transform: scale(0.8); }
+  30% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.neural-chatbot-input-area {
+  position: relative;
+  border-top: 1px solid var(--glass-border);
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.neural-chatbot-form {
+  display: flex;
+  gap: 8px;
+}
+
+.neural-chatbot-input {
+  flex: 1;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  background: var(--navy2);
+  color: var(--white);
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.neural-chatbot-input::placeholder { color: var(--muted); }
+
+.neural-chatbot-input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--glass-glow);
+}
+
+.neural-chatbot-input:disabled { opacity: 0.5; }
+
+.neural-chatbot-send {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--teal);
+  color: var(--navy);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+
+.neural-chatbot-send:hover:not(:disabled) {
+  opacity: 0.9;
+  box-shadow: 0 0 20px rgba(0, 229, 192, 0.3);
+}
+
+.neural-chatbot-send:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.search-suggestions {
+  position: absolute;
+  bottom: 100%;
+  left: 16px;
+  right: 16px;
+  background: var(--navy2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 10;
+  margin-bottom: 4px;
+  animation: fadeInUp 0.15s ease;
+}
+
+.search-suggestion-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--white);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s ease;
+}
+
+.search-suggestion-item:hover { background: var(--glass-glow); }
+.search-suggestion-icon { flex-shrink: 0; color: var(--muted); }
+
+.search-suggestion-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-suggestion-score {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--teal);
+  font-weight: 600;
+  background: var(--glass-glow);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.search-suggestion-skeleton { padding: 14px 16px; }
+
+.neural-faq-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.neural-faq-sidebar-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+
+.neural-faq-sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--white);
+}
+
+.neural-faq-sidebar-body { padding: 12px; }
+.neural-faq-sidebar-loading { padding: 4px 0; }
+.neural-faq-sidebar-empty { text-align: center; padding: 20px 12px; color: var(--muted); font-size: 13px; }
+
+.neural-faq-sidebar-list { display: flex; flex-direction: column; gap: 4px; }
+
+.neural-faq-sidebar-item {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.neural-faq-sidebar-item:hover { background: var(--glass-glow); }
+
+.neural-faq-sidebar-item-q {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.neural-faq-sidebar-item-meta { display: flex; align-items: center; gap: 8px; }
+
+.neural-faq-sidebar-item-cat {
+  font-size: 11px;
+  color: var(--teal);
+  font-weight: 500;
+  background: var(--glass-glow);
+  padding: 1px 8px;
+  border-radius: 6px;
+}
+
+.neural-faq-sidebar-item-views { font-size: 11px; color: var(--muted); }
+
+.neural-faq-category-list { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.neural-faq-category-chip {
+  font-size: 12px;
+  color: var(--white);
+  background: var(--navy2);
+  border: 1px solid var(--glass-border);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.skeleton-line {
+  background: linear-gradient(90deg, var(--navy2) 25%, rgba(0, 229, 192, 0.05) 50%, var(--navy2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 900px) {
+  .neural-faq-layout { grid-template-columns: 1fr; }
+  .neural-faq-sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+}
+
+@media (max-width: 640px) {
+  .neural-faq-header-inner { padding: 0 16px; }
+  .neural-faq-main { padding: 0 16px 40px; }
+  .neural-faq-layout { gap: 24px; padding-top: 24px; }
+  .neural-faq-title { font-size: 24px; }
+  .neural-chatbot-body { min-height: 260px; max-height: 340px; padding: 14px; }
+  .neural-chatbot-input-area { padding: 10px 12px; }
+  .neural-faq-user-name, .neural-faq-nav-btn { display: none; }
+  .neural-faq-sidebar { grid-template-columns: 1fr; }
+  .chat-message-content { max-width: 90%; }
+}

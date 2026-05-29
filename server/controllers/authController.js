@@ -4,7 +4,10 @@ const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
 const { AppError } = require('../middleware/errorHandler');
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const googleClient = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET
+);
 
 const signAccessToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_ACCESS_SECRET, {

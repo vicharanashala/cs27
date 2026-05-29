@@ -52,7 +52,7 @@ export default function RegisterPage() {
     try {
       const user = await register(form.name, form.email, form.password);
       toast.success('Account created successfully!');
-      navigate('/dashboard', { replace: true });
+      navigate('/user', { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
     } finally {
@@ -64,7 +64,7 @@ export default function RegisterPage() {
     try {
       const user = await googleLogin(credential);
       toast.success(`Welcome, ${user.name}!`);
-      navigate('/dashboard', { replace: true });
+      navigate('/user', { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Google sign-up failed');
     }

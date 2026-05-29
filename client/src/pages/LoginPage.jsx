@@ -37,7 +37,7 @@ export default function LoginPage() {
     try {
       const user = await login(form.email, form.password, rememberMe);
       toast.success(`Welcome back, ${user.name}!`);
-      navigate(user.role === 'super_admin' || user.role === 'admin' ? '/admin' : '/dashboard', { replace: true });
+      navigate(user.role === 'super_admin' || user.role === 'admin' ? '/admin' : '/user', { replace: true });
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed';
       toast.error(msg);
@@ -66,7 +66,7 @@ export default function LoginPage() {
     try {
       const user = await googleLogin(credential);
       toast.success(`Welcome, ${user.name}!`);
-      navigate(user.role === 'super_admin' || user.role === 'admin' ? '/admin' : '/dashboard', { replace: true });
+      navigate(user.role === 'super_admin' || user.role === 'admin' ? '/admin' : '/user', { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Google sign-in failed');
     }
