@@ -23,9 +23,11 @@ export default function UserPage() {
   const [overviewLoading, setOverviewLoading] = useState(true);
   const [overviewOpen, setOverviewOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
+  const [highlightedFaq, setHighlightedFaq] = useState(null);
   const debounceRef = useRef(null);
   const searchRef = useRef(null);
   const overviewRef = useRef(null);
+  const faqRefs = useRef({});
 
   useEffect(() => {
     searchRef.current?.focus();
@@ -157,6 +159,17 @@ export default function UserPage() {
             }}>
               {results.map((faq) => (
                 <div key={faq._id} style={{ padding: '14px 16px', cursor: 'pointer', borderBottom: '1px solid var(--border)' }}
+                  onClick={() => {
+                    setQuery('');
+                    setShowResults(false);
+                    setResults([]);
+                    setHighlightedFaq(faq._id);
+                    setActiveCategory(faq.category);
+                    setTimeout(() => {
+                      const el = faqRefs.current[faq._id];
+                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 150);
+                  }}
                   onMouseOver={e => e.currentTarget.style.background = 'var(--accent-light)'}
                   onMouseOut={e => e.currentTarget.style.background = 'transparent'}
                 >
@@ -226,8 +239,12 @@ export default function UserPage() {
         ) : (
           <div>
             {(activeCategory ? faqs.filter(f => f.category === activeCategory) : faqs).map(faq => (
-              <details key={faq._id} style={{
-                background: 'var(--bg-card)', backdropFilter: 'blur(16px)',
+              <details key={faq._id} open={highlightedFaq === faq._id}
+                ref={el => { if (el) faqRefs.current[faq._id] = el; }}
+                onToggle={e => { if (!e.target.open && highlightedFaq === faq._id) setHighlightedFaq(null); }}
+                style={{
+                background: highlightedFaq === faq._id ? 'var(--accent-light)' : 'var(--bg-card)',
+                backdropFilter: 'blur(16px)',
                 border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',
                 marginBottom: 8, overflow: 'hidden'
               }}>
