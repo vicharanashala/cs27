@@ -108,10 +108,8 @@ export default function FaqAssistant() {
                 {msg.text}
                 {msg.sources && msg.sources.length > 0 && (
                   <div className="ym-sources">
-                    <strong>Sources:</strong>
                     {msg.sources.slice(0, 3).map((s, si) => (
                       <div key={si} className="ym-source-item">
-                        <span className="ym-source-score">{Math.round(s.score * 100)}%</span>
                         <span>{s.question}</span>
                       </div>
                     ))}
