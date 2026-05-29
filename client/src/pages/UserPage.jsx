@@ -5,7 +5,6 @@ import api from '../api/axios';
 import { searchFAQs, getSuggestions } from '../api/searchApi';
 import SearchBar from '../components/SearchBar';
 import SearchSuggestions from '../components/SearchSuggestions';
-import SearchResults from '../components/SearchResults';
 import '../styles/search.css';
 
 const CATEGORIES = [
@@ -19,7 +18,7 @@ export default function UserPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [semanticResults, setSemanticResults] = useState(null);
+  const [searchFaqIds, setSearchFaqIds] = useState(null);
   const [semanticLoading, setSemanticLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
@@ -88,12 +87,21 @@ export default function UserPage() {
     setQuery(q);
     setShowSuggestions(false);
     setSemanticLoading(true);
-    setSemanticResults(null);
     try {
       const data = await searchFAQs(q);
-      setSemanticResults(data);
+      if (data.sources && data.sources.length > 0) {
+        const ids = data.sources.map(s => s.faqId);
+        setSearchFaqIds(ids);
+        setActiveCategory(null);
+        setTimeout(() => {
+          const first = faqRefs.current[ids[0]];
+          if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 200);
+      } else {
+        setSearchFaqIds([]);
+      }
     } catch {
-      setSemanticResults(null);
+      setSearchFaqIds([]);
     } finally {
       setSemanticLoading(false);
     }
@@ -199,12 +207,6 @@ export default function UserPage() {
               query={query}
             />
           )}
-          <SearchResults
-            results={semanticResults}
-            loading={semanticLoading}
-            onSelectQuestion={(q) => handleSearch(q)}
-            query={query}
-          />
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
@@ -217,12 +219,13 @@ export default function UserPage() {
                 onClick={() => {
                   if (cat === 'programme-overview') {
                     setQuery('');
-                    setShowResults(false);
+                    setSearchFaqIds(null);
                     setActiveCategory(null);
                     setOverviewOpen(true);
                     setTimeout(() => overviewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
                   } else {
                     setActiveCategory(activeCategory === cat ? null : cat);
+                    setSearchFaqIds(null);
                   }
                 }}
                 style={{
@@ -249,27 +252,36 @@ export default function UserPage() {
           </div>
         ) : (
           <div>
-            {(activeCategory ? faqs.filter(f => f.category === activeCategory) : faqs).map(faq => (
-              <details key={faq._id} open={highlightedFaq === faq._id}
-                ref={el => { if (el) faqRefs.current[faq._id] = el; }}
-                onToggle={e => { if (!e.target.open && highlightedFaq === faq._id) setHighlightedFaq(null); }}
-                style={{
-                background: highlightedFaq === faq._id ? 'var(--accent-light)' : 'var(--bg-card)',
-                backdropFilter: 'blur(16px)',
-                border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',
-                marginBottom: 8, overflow: 'hidden'
-              }}>
-                <summary style={{
-                  padding: '14px 20px', cursor: 'pointer', fontSize: 14, fontWeight: 500,
-                  color: 'var(--text-primary)'
+            {(searchFaqIds
+              ? faqs.filter(f => searchFaqIds.includes(f._id))
+              : activeCategory
+                ? faqs.filter(f => f.category === activeCategory)
+                : faqs
+            ).map(faq => {
+              const matched = searchFaqIds?.includes(faq._id);
+              return (
+                <details key={faq._id} open={!!matched || highlightedFaq === faq._id}
+                  ref={el => { if (el) faqRefs.current[faq._id] = el; }}
+                  onToggle={e => { if (!e.target.open && highlightedFaq === faq._id) setHighlightedFaq(null); }}
+                  style={{
+                  display: searchFaqIds && !matched ? 'none' : 'block',
+                  background: matched ? 'var(--accent-light)' : 'var(--bg-card)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',
+                  marginBottom: 8, overflow: 'hidden'
                 }}>
-                  {faq.question}
-                </summary>
-                <div style={{ padding: '0 20px 16px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                  {faq.answer}
-                </div>
-              </details>
-            ))}
+                  <summary style={{
+                    padding: '14px 20px', cursor: 'pointer', fontSize: 14, fontWeight: 500,
+                    color: 'var(--text-primary)'
+                  }}>
+                    {faq.question}
+                  </summary>
+                  <div style={{ padding: '0 20px 16px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                    {faq.answer}
+                  </div>
+                </details>
+              );
+            })}
           </div>
         ))}
 
