@@ -58,10 +58,12 @@ const seedFAQs = async () => {
   try {
     const count = await Faq.countDocuments();
     if (count > 0) {
-      const internshipCount = await Faq.countDocuments({ category: 'internship' });
+      const internshipCategories = ['about-internship', 'timing-dates', 'noc', 'selection-offer', 'work-mentorship', 'code-of-conduct', 'rosetta', 'vibe-platform', 'team-formation', 'certificate'];
+      const internshipCount = await Faq.countDocuments({ category: { $in: internshipCategories } });
       if (internshipCount === 0) {
+        await Faq.deleteMany({ category: 'internship' });
         const faqDocs = await Faq.insertMany(INTERNSHIP_FAQS);
-        console.log(`FAQs: Added ${faqDocs.length} internship FAQs to existing ${count} FAQs`);
+        console.log(`FAQs: Added ${faqDocs.length} internship FAQs, cleaned up old category`);
         const embeddings = [];
         for (const faq of faqDocs) {
           try {

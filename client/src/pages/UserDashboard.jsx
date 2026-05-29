@@ -13,7 +13,16 @@ const CATEGORY_LABELS = {
   'technical-support': { label: 'Support', icon: '🔧' },
   certifications: { label: 'Certifications', icon: '🎓' },
   'privacy-security': { label: 'Privacy', icon: '🔒' },
-  internship: { label: 'Internship', icon: '💼' },
+  'about-internship': { label: 'About the internship', icon: 'ℹ️' },
+  'timing-dates': { label: 'Timing and dates', icon: '📅' },
+  noc: { label: 'NOC', icon: '📄' },
+  'selection-offer': { label: 'Selection, offer letter and certificate', icon: '📋' },
+  'work-mentorship': { label: 'Work, mentorship and projects', icon: '💻' },
+  'code-of-conduct': { label: 'Code of conduct', icon: '⚖️' },
+  rosetta: { label: 'Rosetta — your internship journal', icon: '📓' },
+  'vibe-platform': { label: 'ViBe Platform', icon: '📺' },
+  'team-formation': { label: 'Team Formation', icon: '👥' },
+  certificate: { label: 'Certificate', icon: '🎖️' },
 };
 
 export default function UserDashboard() {
