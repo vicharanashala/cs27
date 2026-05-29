@@ -19,7 +19,6 @@ export default function UserPage() {
   const [showResults, setShowResults] = useState(false);
   const [faqs, setFaqs] = useState([]);
   const [faqsLoading, setFaqsLoading] = useState(true);
-  const [expanded, setExpanded] = useState({});
   const [overview, setOverview] = useState(null);
   const [overviewLoading, setOverviewLoading] = useState(true);
   const [overviewOpen, setOverviewOpen] = useState(false);
@@ -38,13 +37,7 @@ export default function UserPage() {
     setFaqsLoading(true);
     try {
       const { data } = await api.get('/faqs?limit=200');
-      const grouped = {};
-      (data.results || []).forEach(f => {
-        const cat = f.category || 'general';
-        if (!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(f);
-      });
-      setFaqs(Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)));
+      setFaqs(data.results || []);
     } catch {
       setFaqs([]);
     } finally {
@@ -86,10 +79,6 @@ export default function UserPage() {
     setQuery(val);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => searchFAQs(val), 250);
-  };
-
-  const toggleCategory = (cat) => {
-    setExpanded(prev => ({ ...prev, [cat]: !prev[cat] }));
   };
 
   const handleLogout = async () => {
@@ -210,7 +199,6 @@ export default function UserPage() {
                     setTimeout(() => overviewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
                   } else {
                     setActiveCategory(activeCategory === cat ? null : cat);
-                    setExpanded(prev => ({ ...prev, [cat]: true }));
                   }
                 }}
                 style={{
@@ -229,7 +217,7 @@ export default function UserPage() {
           })}
         </div>
 
-        {faqsLoading ? (
+        {(faqsLoading ? (
           <div>
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} style={{ height: 48, background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)', marginBottom: 8, animation: 'shimmer 1.5s infinite', backgroundImage: 'linear-gradient(90deg, var(--bg-secondary) 0%, var(--bg-card) 50%, var(--bg-secondary) 100%)', backgroundSize: '200% 100%' }} />
@@ -237,47 +225,28 @@ export default function UserPage() {
           </div>
         ) : (
           <div>
-            {(activeCategory ? faqs.filter(([c]) => c === activeCategory) : faqs).map(([cat, items]) => (
-              <div key={cat} style={{
+            {(activeCategory ? faqs.filter(f => f.category === activeCategory) : faqs).map(faq => (
+              <details key={faq._id} style={{
                 background: 'var(--bg-card)', backdropFilter: 'blur(16px)',
                 border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',
-                marginBottom: 12, overflow: 'hidden'
+                marginBottom: 8, overflow: 'hidden'
               }}>
-                <div
-                  onClick={() => toggleCategory(cat)}
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '16px 20px', cursor: 'pointer',
-                    fontWeight: 600, fontSize: 15, textTransform: 'capitalize'
-                  }}
-                >
-                  <span>{cat.replace(/-/g, ' ')} ({items.length})</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                    style={{ transform: expanded[cat] ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 200ms ease' }}>
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </div>
-                {expanded[cat] && (
-                  <div style={{ borderTop: '1px solid var(--border)' }}>
-                    {items.map((faq) => (
-                      <details key={faq._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                        <summary style={{
-                          padding: '14px 20px', cursor: 'pointer', fontSize: 14, fontWeight: 500,
-                          color: 'var(--text-primary)'
-                        }}>
-                          {faq.question}
-                        </summary>
-                        <div style={{ padding: '0 20px 16px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                          {faq.answer}
-                        </div>
-                      </details>
-                    ))}
+                <summary style={{
+                  padding: '14px 20px', cursor: 'pointer', fontSize: 14, fontWeight: 500,
+                  color: 'var(--text-primary)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span>{faq.question}</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)', background: 'var(--bg-secondary)', padding: '2px 8px', borderRadius: '10px', whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{faq.category?.replace(/-/g, ' ')}</span>
                   </div>
-                )}
-              </div>
+                </summary>
+                <div style={{ padding: '0 20px 16px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                  {faq.answer}
+                </div>
+              </details>
             ))}
           </div>
-        )}
+        ))}
 
         <div ref={overviewRef} style={{
           background: 'var(--bg-card)', backdropFilter: 'blur(16px)',
