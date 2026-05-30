@@ -1,3 +1,0 @@
-The 'path' argument is deprecated. Please use 'ssl', 'host', and 'port' instead
-RAG: ChromaDB not available (start with: chroma run --path ./chroma_data)
-RAG: Falling back to in-memory search
