@@ -194,10 +194,8 @@ const AdminArea = () => {
   };
 
   const handlePromoteToFaq = async (q) => {
-    const answerText = prompt('Enter the official answer for this FAQ:');
-    if (!answerText) return;
     try {
-      await adminService.createFaq({ question: q.title, answer: answerText, category: 'general' });
+      await adminService.createFaq({ question: q.title, answer: q.title, category: 'general' });
       alert('Successfully promoted to FAQ!');
     } catch { alert('Failed to promote to FAQ'); }
   };
@@ -232,11 +230,9 @@ const AdminArea = () => {
   };
 
   const handlePromoteQueryToFaq = async (q) => {
-    const answerText = prompt('Enter the official answer for this FAQ:');
-    if (!answerText) return;
     try {
-      await adminService.createFaq({ question: q.question, answer: answerText, category: 'general' });
-      await api.patch(`/queries/${q._id}/respond`, { status: 'resolved', response: answerText });
+      await adminService.createFaq({ question: q.question, answer: q.adminResponse || q.question, category: 'general' });
+      await api.patch(`/queries/${q._id}/respond`, { status: 'resolved', response: q.adminResponse || q.question });
       alert('Promoted to FAQ and marked resolved!');
       fetchData();
     } catch { alert('Failed to promote query to FAQ'); }
