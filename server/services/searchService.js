@@ -22,7 +22,6 @@ let chromaClient = null;
 let collection = null;
 let chromaAvailable = false;
 
-// In-memory embeddings cache
 const faqEmbeddingsCache = new Map();
 
 function initChroma() {
@@ -66,6 +65,7 @@ async function buildEmbeddingsCache() {
     try {
       const text = `${faq.question} ${faq.answer}`;
       const embedding = await generateEmbedding(text);
+        await new Promise(r => setTimeout(r, 150));
       faqEmbeddingsCache.set(faq._id.toString(), {
         faqId: faq._id.toString(),
         question: faq.question,
@@ -84,7 +84,6 @@ async function indexFaq(faq) {
   const text = `${faq.question} ${faq.answer}`;
   const embedding = await generateEmbedding(text);
 
-  // Update cache
   faqEmbeddingsCache.set(faq._id.toString(), {
     faqId: faq._id.toString(),
     question: faq.question,
@@ -107,9 +106,7 @@ async function indexFaq(faq) {
         documents: [`${faq.question} ${faq.answer}`],
       });
       return;
-    } catch {
-      // fall through to in-memory
-    }
+    } catch { }
   }
 }
 
@@ -119,9 +116,7 @@ async function deleteFaqIndex(faqId) {
   if (col) {
     try {
       await col.delete({ ids: [faqId.toString()] });
-    } catch {
-      // ignore
-    }
+    } catch { }
   }
 }
 
@@ -154,12 +149,9 @@ async function searchSimilar(query, limit = 5) {
         }
       }
       return sources.sort((a, b) => b.score - a.score);
-    } catch {
-      // fall through to in-memory
-    }
+    } catch { }
   }
 
-  // Use cache instead of recomputing every time
   if (faqEmbeddingsCache.size === 0) {
     await buildEmbeddingsCache();
   }
@@ -190,58 +182,30 @@ async function getSuggestions(query) {
 
 async function generateGeneralAnswer(userQuery) {
   if (!LLM_API_KEY) {
-    return {
-      answer: "Hello! How can I help you today?",
-      confidence: 0,
-    };
+    return { answer: "Hello! How can I help you today?", confidence: 0 };
   }
-
   try {
-    const { data } = await axios.post(
-      LLM_ENDPOINT,
-      {
-        model: LLM_MODEL,
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are a friendly chatbot. Respond naturally to greetings, small talk, and general conversation. Keep responses short.',
-          },
-          {
-            role: 'user',
-            content: userQuery,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 150,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${LLM_API_KEY}`,
-        },
-        timeout: 10000,
-      }
-    );
-
-    return {
-      answer: data.choices?.[0]?.message?.content?.trim() || 'Hello!',
-      confidence: 0,
-    };
+    const { data } = await axios.post(LLM_ENDPOINT, {
+      model: LLM_MODEL,
+      messages: [
+        { role: 'system', content: 'You are a friendly chatbot. Respond naturally to greetings, small talk, and general conversation. Keep responses short.' },
+        { role: 'user', content: userQuery },
+      ],
+      temperature: 0.7,
+      max_tokens: 150,
+    }, {
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${LLM_API_KEY}` },
+      timeout: 10000,
+    });
+    return { answer: data.choices?.[0]?.message?.content?.trim() || 'Hello!', confidence: 0 };
   } catch {
-    return {
-      answer: 'Hello! How can I help you today?',
-      confidence: 0,
-    };
+    return { answer: 'Hello! How can I help you today?', confidence: 0 };
   }
 }
 
 async function generateAnswer(userQuery, sources) {
   if (!sources || sources.length === 0) {
-    return {
-      answer: 'No relevant information found in the knowledge base.',
-      confidence: 0,
-    };
+    return { answer: 'No relevant information found in the knowledge base.', confidence: 0 };
   }
 
   const context = sources
@@ -250,91 +214,51 @@ async function generateAnswer(userQuery, sources) {
 
   const avgScore = sources.reduce((sum, s) => sum + s.score, 0) / sources.length;
   const confidence = Math.round(avgScore * 100) / 100;
-  console.log('Query:', userQuery);
-console.log('Top score:', sources[0]?.score);
-console.log('Confidence:', confidence);
 
   if (!LLM_API_KEY) {
     const best = sources[0];
     const answer = best.document.replace(best.question, '').trim();
-    return {
-      answer: answer || best.question,
-      confidence,
-    };
+    return { answer: answer || best.question, confidence };
   }
 
-  const systemPrompt = `You are a helpful FAQ assistant. Answer the user's question based only on the provided context. Be concise and direct. If the context has related information, use it to answer even if the wording is different.`;
-  const userPrompt = `Context:\n${context}\n\nQuestion: ${userQuery}\n\nAnswer based only on the context above.`;
-
   try {
-    const { data } = await axios.post(
-      LLM_ENDPOINT,
-      {
-        model: LLM_MODEL,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature: 0.3,
-        max_tokens: 512,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${LLM_API_KEY}`,
-        },
-        timeout: 10000,
-      }
-    );
-
-    const answer = data.choices?.[0]?.message?.content?.trim() || '';
-    return { answer, confidence };
+    const { data } = await axios.post(LLM_ENDPOINT, {
+      model: LLM_MODEL,
+      messages: [
+        { role: 'system', content: 'You are a helpful FAQ assistant. Answer the user\'s question based only on the provided context. Be concise and direct.' },
+        { role: 'user', content: `Context:\n${context}\n\nQuestion: ${userQuery}\n\nAnswer based only on the context above.` },
+      ],
+      temperature: 0.3,
+      max_tokens: 512,
+    }, {
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${LLM_API_KEY}` },
+      timeout: 10000,
+    });
+    return { answer: data.choices?.[0]?.message?.content?.trim() || '', confidence };
   } catch {
     const best = sources[0];
-    const answer = best.document.replace(best.question, '').trim();
-    return {
-      answer: answer || best.question,
-      confidence,
-    };
+    return { answer: best.document.replace(best.question, '').trim() || best.question, confidence };
   }
 }
 
 async function indexAllFaqs() {
   const faqs = await Faq.find({}).lean();
   let indexed = 0;
-
   for (const faq of faqs) {
-    try {
-      await indexFaq(faq);
-      indexed++;
-    } catch { /* skip */ }
+    try { await indexFaq(faq); indexed++; } catch { }
   }
-
-  // Build in-memory cache on startup
   await buildEmbeddingsCache();
-
-  try {
-    await indexOverview();
-    indexed++;
-  } catch { /* non-critical */ }
-
+  try { await indexOverview(); indexed++; } catch { }
   return indexed;
 }
 
 async function indexOverview() {
   const existingIds = ['overview-about', 'overview-badges', 'overview-expectations', 'overview-project', 'overview-interview', 'overview-logistics', 'overview-cost'];
   const col = await ensureCollection();
-  if (col) {
-    try { await col.delete({ ids: existingIds }); } catch { /* ok */ }
-  }
+  if (col) { try { await col.delete({ ids: existingIds }); } catch { } }
 
   let data;
-  try {
-    data = await fetchOverview();
-  } catch {
-    return;
-  }
-
+  try { data = await fetchOverview(); } catch { return; }
   if (!data?.sections?.length) return;
 
   const sections = [
@@ -360,7 +284,7 @@ async function indexOverview() {
           metadatas: [{ faqId: sec.id, question: sec.title, category: 'programme-overview' }],
           documents: [text],
         });
-      } catch { /* skip */ }
+      } catch { }
     }
   }
 }

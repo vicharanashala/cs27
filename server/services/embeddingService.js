@@ -1,34 +1,15 @@
-const { pipeline } = require('@xenova/transformers');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-let embedder = null;
-
-async function getEmbedder() {
-  if (!embedder) {
-    embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
-      quantized: true,
-    });
-  }
-  return embedder;
-}
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function generateEmbedding(text) {
-  if (!text || typeof text !== 'string') {
-    throw new Error('Text is required for embedding generation');
-  }
-
+  if (!text || typeof text !== 'string') throw new Error('Text is required');
   const trimmed = text.trim();
-  if (trimmed.length < 3) {
-    throw new Error('Text must be at least 3 characters');
-  }
+  if (trimmed.length < 3) throw new Error('Text too short');
 
-  try {
-    const extractor = await getEmbedder();
-    const result = await extractor(trimmed, { pooling: 'mean', normalize: true });
-    const embedding = Array.from(result.data);
-    return embedding;
-  } catch (err) {
-    throw new Error(`Embedding generation failed: ${err.message}`);
-  }
+  const model = genAI.getGenerativeModel({ model: 'gemini-embedding-001' });
+  const result = await model.embedContent(trimmed);
+  return result.embedding.values;
 }
 
 module.exports = { generateEmbedding };
