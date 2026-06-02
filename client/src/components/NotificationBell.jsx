@@ -14,9 +14,7 @@ function timeAgo(dateStr) {
 export default function NotificationBell() {
   const { unreadCount, notifications, fetchNotifications, markAsRead, markAllAsRead, loading } = useNotifications();
   const [open, setOpen] = useState(false);
-  const [dropdownStyle, setDropdownStyle] = useState({});
   const ref = useRef(null);
-  const btnRef = useRef(null);
 
   useEffect(() => {
     function handleClick(e) {
@@ -26,23 +24,10 @@ export default function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  useEffect(() => {
-    if (open && btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect();
-      setDropdownStyle({
-        position: 'fixed',
-        right: window.innerWidth - rect.right,
-        top: rect.bottom + 8,
-        zIndex: 9999,
-      });
-    }
-  }, [open]);
-
   return (
-    <div ref={ref} style={{ display: 'inline-block' }}>
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
       {/* Bell button */}
       <button
-        ref={btnRef}
         onClick={() => { setOpen(!open); if (!open) fetchNotifications(); }}
         style={{
           background: 'transparent', border: '1px solid var(--border)',
@@ -76,7 +61,8 @@ export default function NotificationBell() {
       {/* Dropdown */}
       {open && (
         <div style={{
-          ...dropdownStyle,
+          position: 'absolute', right: 0, top: 'calc(100% + 8px)',
+          zIndex: 2147483647,
           width: 360, maxHeight: 480, overflowY: 'auto',
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
