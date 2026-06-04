@@ -1,3 +1,5 @@
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
@@ -26,25 +28,29 @@ export default function App() {
         <SocketProvider>
           <NotificationProvider>
             <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: 'var(--bg-card)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '14px',
-              backdropFilter: 'blur(8px)',
-            },
+  position="top-right"
+    containerStyle={{ zIndex: 99999 }}
+  toastOptions={{
+    duration: 4000,
+    style: {
+      background: 'var(--bg-card)',
+      color: 'var(--text-primary)',
+      border: '1px solid var(--border)',
+      borderRadius: 'var(--radius-sm)',
+      fontSize: '14px',
+      backdropFilter: 'blur(8px)',
+      zIndex: 99999,
+    },
             success: { iconTheme: { primary: 'var(--success)', secondary: 'white' } },
             error: { iconTheme: { primary: 'var(--error)', secondary: 'white' } },
           }}
         />
         <Routes>
           {/* Public routes */}
-          <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
-          <Route path="/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
+         <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
+<Route path="/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
+<Route path="/forgot-password" element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
+<Route path="/reset-password/:token" element={<AuthLayout><ResetPasswordPage /></AuthLayout>} />
 
           {/* Standalone pages */}
           <Route path="/user" element={<ProtectedRoute><UserPage /></ProtectedRoute>} />

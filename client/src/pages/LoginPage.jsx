@@ -39,8 +39,8 @@ export default function LoginPage() {
       toast.success(`Welcome back, ${user.name}!`);
       navigate(user.role === 'super_admin' || user.role === 'admin' ? '/admin' : '/user', { replace: true });
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed';
-      toast.error(msg);
+  const msg = err.response?.data?.message || 'Login failed';
+  toast.error(msg);
       if (err.response?.status === 429) {
         const match = msg.match(/(\d+)/);
         if (match) {
@@ -206,7 +206,7 @@ export default function LoginPage() {
 
       <div className="divider">or continue with</div>
 
-      <GoogleSignInButton
+       <GoogleSignInButton
         onSuccess={handleGoogleSuccess}
         onError={(msg) => toast.error(msg)}
         text="Sign in with Google"

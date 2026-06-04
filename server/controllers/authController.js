@@ -5,7 +5,7 @@ const User = require('../models/User');
 const Notification = require('../models/Notification');
 const { notifyUser } = require('../services/socketService');
 const { AppError } = require('../middleware/errorHandler');
-
+const { sendPasswordResetEmail } = require('../services/emailService');
 const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET
@@ -246,18 +246,17 @@ exports.forgotPassword = async (req, res, next) => {
 
     const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
-    if (process.env.NODE_ENV === 'development') {
-      return res.json({
-        success: true,
-        message: 'Password reset link generated (dev mode)',
-        resetUrl,
-      });
-    }
+    try {
+  await sendPasswordResetEmail(user.email, resetUrl);
+  console.log('Reset email sent to:', user.email);
+} catch (emailErr) {
+  console.error('Email send failed:', emailErr.message);
+}
 
-    res.json({
-      success: true,
-      message: 'If an account with that email exists, a password reset link has been sent.',
-    });
+res.json({
+  success: true,
+  message: 'If an account with that email exists, a password reset link has been sent.',
+});
   } catch (err) {
     next(err);
   }

@@ -29,8 +29,13 @@ exports.search = async (req, res, next) => {
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
       return res.json({ success: true, ...cached.data });
     }
+// Expand short queries
+let searchQuery = trimmed;
+if (trimmed.split(' ').length === 1 && trimmed.length < 10) {
+  searchQuery = `tell me about ${trimmed}`;
+}
 
-    const sources = await searchSimilar(trimmed, 5);
+const sources = await searchSimilar(searchQuery, 5);
 const topScore = sources?.[0]?.score || 0;
 
 let answer, confidence;
